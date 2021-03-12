@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <string.h> 
+struct staff{
+	char name[20];
+	int id;
+	char duty[20];
+};
+struct list{
+	struct staff sta[40];
+	int count;
+};
+int search(struct list*l,int id){
+	int i;
+	for(i=0;i<l->count;i++){
+		if(l->sta[i].id==id)
+		return i;
+	}
+	return -1;
+}
+void add(struct list* l,struct staff s){
+	l->count++;
+	l->sta[l->count]=s;
+	printf("添加成功！\n");
+}
+void del(struct list* l,int id){
+	int loc=search(l,id); int i;
+	if(loc==-1)
+		printf("不存在该职工\n");
+	else {
+		for(i=loc;i<l->count;i++){
+			l->sta[i]=l->sta[i+1];
+		}
+		l->count--;
+		printf("删除成功！\n");
+	}	
+}
+void print(struct list* l){
+	int i;
+	for(i=0;i<=l->count;i++){
+		printf("姓名：%s 工号：%d 职务：%s\n",l->sta[i].name,l->sta[i].id,l->sta[i].duty);
+	}
+}
+int main(){
+	struct staff s; 
+	struct list li;
+	struct list* l=&li;
+	int id;
+	l->count=-1;
+	printf("*****菜单*****\n");
+	printf("1.添加\n2.删除\n3.打印\n");
+	printf("请输入您选择的操作：\n");
+	int choose;
+	while(scanf("%d",&choose)==1)
+	{
+		switch (choose){
+		case 1:
+			printf("请输入要添加职工的姓名，工号，职务：\n");
+			scanf("%s%d%s",s.name,&s.id,s.duty);
+			add(l,s);
+			break;
+		case 2: 
+			printf("请输入要删除职工的工号\n");
+			scanf("%d",&id);
+			del(l,id);
+			break;
+		case 3:
+			print(l);
+			break;
+		}
+	}
+	return 0;	
+}
