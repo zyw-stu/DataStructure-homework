@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <malloc.h>
+typedef struct node{
+    int val;
+    struct node* next;
+}node,*list;
+void CreatList(list l,int n){//创建带有头结点的单链表
+    l=(list )malloc(sizeof(node));
+    l->next=NULL;
+    for(int i=0;i<n;i++){
+        list p=(list)malloc(sizeof(node));
+        scanf("%d",&p->val);
+        p->next=l->next;
+        l->next=p;
+    }
+}
+int GetElem(list l,int i,int* e){//以e返回第i个元素的值
+    list p=l->next; int j=1;
+    while(p&&j<i){p=p->next; ++j;}
+    if(!p||j>i)
+        return -1;
+    e=&p->val;
+    return 1;                    
+}
+int ListInsert(list l,int i,int e){//在链表中第i个结点之前插入新的元素e
+    list p=l; int j=0;
+    while(p&&j<i-1){p=p->next; ++j;}
+    if(!p||j>i-1)
+        return -1;
+    list s=(list)malloc(sizeof(node)); s->val=e;
+    s->next=p->next;
+    p->next=s;
+}
+int ListDelete(list l,int i){//删除单链表中第i个结点
+    list p=l; int j=0;
+    while(p->next&&j<i-1){p=p->next; ++j;}
+    if(!(p->next)||j>i-1||p->next==NULL)
+        return -1;
+    list q=p->next; p->next=q->next;
+    free (q);
+    return 1;
+}
+void printList(list l){//打印链表中的元素
+    list p=l->next;
+    while(p){
+        printf("%d ",p->val);
+        p=p->next;
+    }
+    printf("\n");
+}
+void ClearList(list l){//清空链表
+    while(l->next){
+        list p=l->next; l->next=p->next;
+        free(p);
+    }
+}
+int del(int mink, int maxk,struct node* l){
+    list head=l->next;
+    list p=head,pmin,pmax,pre_min;
+    int flag1=0,flag2=0;
+    while(p!=NULL){
+        if(head->val>mink){pmin=head;flag1=1;}
+        else if (flag1==0&&((p->val)<mink)&&(p->next!=NULL&&((p->next->val)>=mink))) {
+        pmin=p->next; pre_min=p; flag1=1;}
+        if(flag1 && p!=pmin && p->val<maxk&&(p->next->val>=maxk||p->next==NULL)){pmax=p; flag2=1;break;} 
+        p=p->next;
+    }
+    if(flag1&&flag2){
+        if(pmin==head){
+            if(pmax->next==NULL) l->next=NULL;//删除后链表为空
+            else l->next=pmax->next;
+        }
+        else
+            pre_min->next=pmax->next;
+        for(p=pmin;;p=p->next){
+            free(p);    
+            if(p==pmax) break;
+        }
+    }
+    else 
+        printf("表中不存在可以删除的元素\n");
+} 
+int main()
+{
+    list l;
+    CreatList(l,6);
+    printList(l);
+    del(2,5,l);
+    printList(l);
+}
