@@ -84,6 +84,32 @@ list del(int mink, int maxk,list l){//删除链表中大于mink,小于maxk的元
     else 
         printf("表中不存在可以删除的元素\n");
 } 
+list pre(list p)
+{
+    list pre;
+    while(pre->next){
+        if(pre->next==p)
+            return pre;
+        pre=pre->next;
+    }
+}
+list reverse(list l)
+{
+    list pre_head=l,head=l->next,tail,pre_tail;
+    while(tail->next){tail=tail->next;} pre_tail=pre(tail);
+    while(head!=tail){
+        pre_head->next=tail;
+        tail->next=head->next;
+        pre_tail->next=head;
+        head->next=tail->next;
+        pre_head=head;
+        head=head->next;
+        tail=pre_tail;
+        pre_tail=pre(pre_tail);
+    }
+    return l;
+}
+
 int main()
 {
     list l=CreatList(4);
