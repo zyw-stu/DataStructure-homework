@@ -1,77 +1,75 @@
 #include <stdio.h>
 #include <malloc.h>
-typedef struct node{
+
+typedef struct node {
     int data;
     struct node* prior;
     struct node* next;
     int fre;
-}node,*list;
-void InitList(list l)
-{
-    l=(list)malloc(sizeof(node));
-    l->next=l;
-    l->prior=l;
-}
-void CreatList(list l,int n){//表头插入结点，构建带有头结点循环双向链表
+}node, * list;
+void CreatList(list l, int n) {//表头插入结点，构建带有头结点循环双向链表
     int i;
-    l=(list)malloc(sizeof(node));
-    l->next=(list)malloc(sizeof(node));
-    l->next->fre=0;
-    printf("请输入第1个元素："); scanf("%d",&l->next->data);
-    l->prior=l->next;
-    l->next->prior=l;
-    for(i=1;i<n;i++){
-        printf("请输入第i个元素：",i+1);
-        list s=(list)malloc(sizeof(node));
-        s->fre=0;
-        scanf("%d",&s->data);
-        s->next=l->next;
-        s->prior=l;
-        l->next->prior=s;
-        l->next=s;
+    
+    for (i = 1; i < n; i++) {
+        printf("请输入第%d个元素：", i + 1);
+        list s = (list)malloc(sizeof(node));
+        s->fre = 0;
+        scanf("%d", &s->data);
+        s->next = l->next;
+        s->prior = l;
+        l->next->prior = s;
+        l->next = s;
     }
 }
-void PrintList(list l){//打印链表
-    list p=l->next;
-    while(p!=l){
-        printf("%d ",p->data);
-        p=p->next;
+void PrintList(list l, int n) {//打印链表
+    list p = l->next;
+    int i;
+    for (i = 0; i < n; i++) {
+        printf("%d", p->data);
+        p = p->next;
     }
     printf("\n");
 }
-void LocateList(list l,int e){//访问频度非递增顺序排列
-    list p=l->next,loc;
-    while(p!=l){
-        if(p->data==e){
-            loc=p;
-            loc->fre=loc->fre+1;
-            loc->prior->next=loc->next;
-            loc->next->prior=loc->prior;
+void LocateList(list l, int e) {//访问频度非递增顺序排列
+    list p = l->next, loc=NULL;
+    while (p != l) {
+        if (p->data == e) {
+            loc = p;
+            loc->fre = loc->fre + 1;
+            loc->prior->next = loc->next;
+            loc->next->prior = loc->prior;
             break;
         }
-        p=p->next;
+        p = p->next;
     }
-    p=l->next;
-    while(p!=l){
-        if(p->fre<loc->fre){//插在p的前面
-            loc->next=p;
-            loc->prior=p->prior;
-            p->prior->next=loc;
-            p->prior=loc;
+    p = l->next;
+    while (p != l) {
+        if (p->fre < loc->fre) {//插在p的前面
+            loc->next = p;
+            loc->prior = p->prior;
+            p->prior->next = loc;
+            p->prior = loc;
+            break;
         }
+        p = p->next;
     }
 }
-int main(){
-    list l; 
-    CreatList(l,5);
-    PrintList(l);
-    /*
-     while(e){//e为零时，终止
-        scanf("%d",&e);
-        LocateList(l,e);
-        PrintList(l);
-    }
-    */
+int main() {
+    list  l = (list)malloc(sizeof(node));//头结点 
+    l->next = (list)malloc(sizeof(node));//第一个元素 
+    l->next->fre = 0;
+    printf("请输入第1个元素："); scanf("%d", &l->next->data);
+    l->prior = l->next;
+    l->next->prior = l;
+    l->next->next = l;
+    CreatList(l, 5);
+    PrintList(l, 5);
     int e;
+     while(1){//e为零时，终止
+        scanf("%d",&e);
+        if (e==0) break;
+        LocateList(l,e);
+        PrintList(l,5);
+    }
     return 0;
 }
