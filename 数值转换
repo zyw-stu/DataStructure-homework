@@ -1,0 +1,82 @@
+/*动态顺序存储结构表示栈，将十进制整数转换为任意非十进制整数*/
+#include<stdio.h>
+#include<stdlib.h>
+#include<malloc.h>
+#include<math.h>
+ 
+//栈的动态顺序存储结构
+#define STACK_INIT_SIZE 10
+#define STACKINCREMENT 5
+typedef struct
+{	int *base;
+	int *top;
+	int stacksize;
+}SqStack;
+void InitStack(SqStack *s)  //初始化栈
+{
+	s->base=(int *)malloc(sizeof(int)*STACK_INIT_SIZE);
+	if(!s->base)
+		exit(1);
+	s->top=s->base;
+	s->stacksize=STACK_INIT_SIZE;
+} 
+void push(SqStack *s,int x)  //余数入栈
+{	if(s->top-s->base>=s->stacksize)  //若栈已满，则追加存储空间
+	{	s->base=(int *)realloc(s->base,sizeof(int)*(s->stacksize+STACKINCREMENT));
+		if(!s->base)
+			exit(1);
+		s->top=s->base+s->stacksize;
+		s->stacksize+=STACKINCREMENT;
+	}
+ 	*s->top=x;
+	s->top++;
+}
+int stackEmpty(SqStack *s)   //判断是否为空栈
+{	if(s->base==s->top)
+		return 1;
+	else
+		return 0;
+}
+ 
+int pop(SqStack *s)  //出栈
+{	int x;
+ 	
+	if(stackEmpty(s)) exit(1);    //若栈已空，则无法出栈，退出程序
+	 
+	s->top--;
+	x=*s->top;
+	return x;
+}
+void conversion(SqStack *s,int x,int y) //进制转换
+{
+	int t=x,e;
+	if(x<0)   x=abs(x); 	
+	while(x)    //若十进制整数不为0，则余数入栈
+	{	push(s,x%y);
+		x/=y;
+	} 
+	printf("\n十进制整数%d转换为%d进制整数为：",t,y);  //首先判断符号位，若十进制整数为负数，则首先应输出负号“-”
+	if(t<0)  	printf("-");
+	while(!stackEmpty(s))  //若栈不空，则余数e出栈
+	{	e=pop(s);	
+		if(e>=10)   //若转换成的进制大于10，则输出相应的大写字母或数字
+			printf("%c ",e+55);
+		else
+			printf("%d ",e);
+	}
+}
+int main( )
+{	int m,n;
+	SqStack S;
+ 
+	printf("请输入任意十进制整数：\n");
+	scanf("%d",&m);
+	do
+	{	printf("请输入需要转换的进制：\n");
+		scanf("%d",&n);
+	}while(n<=0||n>36);
+ 
+	InitStack(&S);
+ 	conversion(&S,m,n);
+	printf("\n");
+}
