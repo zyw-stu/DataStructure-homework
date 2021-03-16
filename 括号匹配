@@ -1,0 +1,24 @@
+bool BracketCheck(char str[],int length)
+{
+	SqStack s;
+	InitStack(s);
+	int i;
+	for(i=0;i<length;i++){
+		if(str[i]=="("||str[i]=="["||str[i]=="{"){
+			push(&s,str[i]);
+		}
+		else{
+			if(StackEmpty(&s))
+				return false;
+			char topElem;
+			Pop(&s,topElem); 
+			if(str[i]==")"&&topElem!="(")
+			 	return flase;
+			if(str[i]=="]"&&topElem!="[")
+			 	return flase;
+			if(str[i]=="}"&&topElem!="{")
+			 	return flase;
+		}
+	} 
+	return StackEmpty(&s);
+}
