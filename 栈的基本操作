@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <malloc.h>
+#define MaxSize 100
+#define INCREMENT 10
+typedef struct SqStack{
+    int stacksize;
+    int*top,base;
+}SqStack;
+void InitStack(SqStack* s){
+    s->base=(int*)malloc(MaxSize*sizeof(int));
+    if(!s->base) exit(0);//存储分配失败
+    s->top=s->base;
+    s->stacksize=MaxSize;
+}
+void Push(SqStack *s,int e){//添加元素
+    if(s->top-s->base>=s->stacksize){//栈满，追加空间
+        s->base=(int*)realloc(s->base,(s->stacksize+INCREMENT)*sizeof(int));
+        if(! s->base) exit(0);
+        s->top=s->base+s->stacksize;
+        s->stacksize+=INCREMENT;
+    }
+    *s->top=e;
+    s->top++;
+}
+int Pop(SqStack *s){
+    if(s.top==s.base) return -1;//栈空
+    s->top--;
+    e=*s->top;
+    return e;
+}
+int main()
+{
+    SqStack s;
+    int i,x;
+    InitStack(&s);
+    printf("请输入三个整数，入栈\n");
+    for(i=0;i<3;i++){
+        scanf("%d",&x);
+        pop(&s,x);
+    }
+    printf("依次出栈的元素分别为\n");
+    while(s.top!=s.base){
+        x=pop(&s);
+        printf("%d ",x);
+    }
+    printf("\n");
+}
