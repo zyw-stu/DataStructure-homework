@@ -1,0 +1,32 @@
+/*
+       每接受一个字符即存入存储器”  并不恰当！
+       在用户输入一行的过程中，允许用户输入出差错，并在发现有误时可以及时更正。
+       合理的作法是：
+       设立一个输入缓冲区，用以接受用户输入的一行字符，然后逐行存入用户数据区，并假设“#”为退格符，“@”为退行符。
+        假设从终端接受了这样两行字符：
+        whli##ilr#e（s#*s)
+        outcha@putchar(*s=#++);
+        则实际有效的是下列两行：
+        while (*s)
+        putchar(*s++);
+
+*/
+void LineEdit( ){
+	SqStack S; 
+	InitStack (&S);
+	ch = getchar();  // 从终端接收下一个字符
+	while (ch != EOF) {  //EOF为全文结束符
+		while (ch != EOF && ch != '\n'){
+       	switch (ch) {
+        	case '#' : Pop(&S, c); break;
+        	case '@': ClearStack(&S); break;// 重置S为空栈
+        	default : Push(&S, ch);  break;  
+        	}
+        ch = getchar();  // 从终端接收下一个字符
+        }
+        //将从栈底到栈顶的字符传送至调用过程的数据区；
+        ClearStack(&S);      // 重置S为空栈
+        if (ch != EOF)  ch = getchar( );
+    }
+    DestroyStack(S);
+}
