@@ -1,68 +1,89 @@
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#define MaxSize 100
-#define INCREMENT 10
-typedef struct {
-    int stacksize;
-    int* top;
-    int *base;
-}SqStack;
-int InitStack(SqStack* s) {
-    s->base = (int*)malloc(MaxSize * sizeof(int));
-    if (!s->base) return 0;//存储分配失败
-    s->top = s->base;
-    s->stacksize = MaxSize;
-    return 1;
+#include<stdio.h>
+#include<stdlib.h>
+typedef char QElemType;
+
+typedef struct QNode{
+	QElemType data;
+	struct QNode *next;
+}QNode;
+
+typedef struct{
+	QNode *f;//队头指针
+	QNode *r;//队尾指针
+}LinkQueue;
+
+//初始化一个带有头节点的空队列
+void initQueue(LinkQueue *Q){
+	Q->f = Q->r = (QNode *)malloc(sizeof(QNode));
+	Q->f->next = NULL;
 }
-int  Push(SqStack* s, int e) {//入栈
-    if (s->top - s->base >= s->stacksize) {//栈满，追加空间
-        s->base = (int*)realloc(s->base, (s->stacksize + INCREMENT) * sizeof(int));
-        if (!s->base) return 0;
-        s->top = s->base + s->stacksize;
-        s->stacksize += INCREMENT;
-    }
-    *s->top = e;
-    s->top++;
-    return 1;
+//销毁队列
+void destroyQueue(LinkQueue *Q){
+	while(Q->f){
+		QNode *p = Q->f->next;
+		free(Q->f);
+		Q->f = p;
+	}
 }
-int Pop(SqStack* s) {//出栈
-    if (s->top == s->base) return -1;//栈空
-    s->top--;
-    int e;
-    e = *s->top;
-    return e;
+//入队操作,在队尾插入
+void enQueue(LinkQueue *Q, QElemType e){
+	QNode *p = (QNode *)malloc(sizeof(QNode));
+	p->data = e;
+	p->next = NULL;
+	Q->r->next = p;
+	Q->r = p;
 }
-int GetLen(SqStack *s)//栈的长度
-{
-	int len;
-	len=s->top - s->base;
-	return len;
+//出队操作，在队头删除,并用e返回删除的元素
+QElemType deQueue(LinkQueue *Q){
+	if(Q->f == Q->r){
+		printf("队列为空，删除操作失败！\n");
+		return;
+	}
+	QNode *p = Q->f->next;
+	Q->f->next = p->next;
+	//如果要删除的是尾指针(整个队列此时只有一个元素)，还需要修改尾指针
+	if(p == Q->r)
+		Q->r = Q->f;
+	QElemType e=p->data;
+	free(p);
+	return e;
 }
-void ClearStack(stack *s)//清空栈
-{
-	s->top = s->base;
+
+//利用入队操作创建一个队列,他拥有n个元素
+void createQueue(LinkQueue *Q, int n){
+	int i = 0;
+	printf("请输入%d个字符元素：\n", n);
+	while(i < n){
+		char dataTmp;
+		scanf("%c", &dataTmp);
+		enQueue(Q, dataTmp);
+		i++;
+		getchar();//吃掉换行符
+	}
 }
-void DestroyStack(stack *s)//销毁栈
-{
-	s->top = s->base;
-	free(s->base);
-	s->stack_size=0;
+
+void printQueue(LinkQueue *Q){
+	QNode *p = Q->f->next;
+	while(p){
+		printf("%c ", p->data);
+		p = p->next;
+	}
+	printf("\n\n");
 }
-int main()
-{
-    SqStack s;
-    int i, x;
-    InitStack(&s);
-    printf("请输入三个整数，入栈\n");
-    for (i = 0; i < 3; i++) {
-        scanf("%d", &x);
-        Push(&s, x);
-    }
-    printf("依次出栈的元素分别为\n");
-    while (s.top != s.base) {
-        x = Pop(&s);
-        printf("%d ", x);
-    }
-    printf("\n");
+
+int main(){
+	LinkQueue Q;//定义一个队列
+	QElemType e,a;
+	initQueue(&Q);
+	createQueue(&Q, 5);
+	printQueue(&Q);
+	printf("执行入队操作：");
+	printf("输入您要插入的字符串数据：");
+	scanf("%c", &e);
+	enQueue(&Q, e);
+	printQueue(&Q);
+	printf("执行出队操作：");
+	deQueue(&Q);	
+	printQueue(&Q);
+	return 0;
 }
