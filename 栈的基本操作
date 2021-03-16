@@ -15,7 +15,7 @@ int InitStack(SqStack* s) {
     s->stacksize = MaxSize;
     return 1;
 }
-int  Push(SqStack* s, int e) {//添加元素
+int  Push(SqStack* s, int e) {//入栈
     if (s->top - s->base >= s->stacksize) {//栈满，追加空间
         s->base = (int*)realloc(s->base, (s->stacksize + INCREMENT) * sizeof(int));
         if (!s->base) return 0;
@@ -26,12 +26,28 @@ int  Push(SqStack* s, int e) {//添加元素
     s->top++;
     return 1;
 }
-int Pop(SqStack* s) {
+int Pop(SqStack* s) {//出栈
     if (s->top == s->base) return -1;//栈空
     s->top--;
     int e;
     e = *s->top;
     return e;
+}
+int GetLen(SqStack *s)//栈的长度
+{
+	int len;
+	len=s->top - s->base;
+	return len;
+}
+void ClearStack(stack *s)//清空栈
+{
+	s->top = s->base;
+}
+void DestroyStack(stack *s)//销毁栈
+{
+	s->top = s->base;
+	free(s->base);
+	s->stack_size=0;
 }
 int main()
 {
