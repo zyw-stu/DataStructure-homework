@@ -1,0 +1,28 @@
+int Fibon(int n){
+    if (n == 1 || n == 2){
+        return 1;
+    } else{
+        return Fibon1(n - 1) + Fibon1(n - 2);
+    }
+}
+
+void FibonQueue(int k,int max)//k=MAXSIZE(队列的最大长度)
+{  
+    SqQueue Q;  
+    initQueue(&Q); 
+	enQueue(&Q,1) 
+	int i=1;
+   	while(1){
+   		if(Q->f == (Q->r + 1)%MAXSIZE){//栈满 
+   			if(Fibon(i)>max) break;//判断结束的条件 
+   			deQueue(&Q);//出列 
+   			enQueue(&Q,Fibon(i));//入队 
+			i++;
+		} 
+		else{//栈未满 
+			if(Fibon(i)>max) break;
+			enQueue(&Q,Fibon(i));
+			i++;
+		} 
+	}  	
+}  
