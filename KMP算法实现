@@ -10,7 +10,7 @@ int indexBF(SString S, SString T, int pos){
 			i++;
 			j++;
 		}
-    else{
+                else{
 			i = i - j + 2;//i回到原位置是i - j + 1 ,所以i退到远位置的下一个位置是i - j + 1 + 1
 			j = 1;
 		}
@@ -22,7 +22,7 @@ int indexBF(SString S, SString T, int pos){
 }
 //返回子串T在主串S中第pos个字符之后的位置。若不存在，则函数值为0。其中，T非空，1<=pos<=StrLength(S)。
 int indexKMP(SString S, SString T, int pos, int next[]){
-	int i = pos, j = 1;
+	int i = pos+1, j = 1;
 	while(i <= S[0] && j <= T[0]){
 		if(j == 0 || S[i] == T[j]){
 			i++;  //继续比较后续字符
@@ -54,6 +54,29 @@ void getNextVal(SString T, int next[]){
 			j = next[j];//模式串向右滑动
 		}
 	}	
+}
+void get_next(SString T,int next[]){
+	int i=1,j=0;
+	next[1]=0;
+	while(i<T.length){
+		if(j==0||T.ch[i]==T.ch[j]){
+			++i;++j;
+			next[i]=j;
+		}
+		else
+			j=next[j];
+	}
+}
+void get_nextval(SString T,int next[],int nextval[])
+{
+	nextval[1]=0;
+	for(int j=2;j<=T.length;j++)
+	{
+		if(T.ch[next[j]]==T.ch[j])
+			nextval[j]=nextval[next[j]];
+		else
+			nextval[j]=next[j];
+	}
 }
 void init(SString &S, char str[]){
 	int i = 0;
