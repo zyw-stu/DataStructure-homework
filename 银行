@@ -60,9 +60,16 @@ QElemType deQueue(SqQueue *Q){
 	return e;
 }
 
-void printQueue(SqQueue *Q,int win){
+void printQueue(){
 	int j;
+	SqQueue *Q;
 	for(j=1;j<=6;j++) {
+		if(j==1) Q=&w1;
+		else if(j==2) Q=&w2;
+		else if(j==3) Q=&w3;
+		else if(j==4) Q=&w4;
+		else if(j==5) Q=&w5;
+		else if(j==6) Q=&w6;
 		printf("打印%d窗口状态：\n",j);
 		printf("当前正在办理业务的顾客编号：%d\n",Q->data[Q->f].id);
 		printf("当前正在等待办理业务的顾客编号：\n");
@@ -70,7 +77,8 @@ void printQueue(SqQueue *Q,int win){
 		while(i%MAXSIZE != Q->r){
 		printf("%d ", Q->data[Q->f].id);
 		i++;
-		printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+	 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+	    }
 	}
 }
 void get(){//取号 
@@ -203,7 +211,6 @@ void done()
 }
 void business()
 {
-	
 	printf("***********银行业务系统************\n");
 	printf("1.取号请输入g\n");
 	printf("2.业务完成请输入d\n");
@@ -241,4 +248,5 @@ int main(){
 	initQueue(&w1);initQueue(&w2);initQueue(&w3);
 	initQueue(&w4);initQueue(&w5);initQueue(&w6);
 	business();
+	return 0;
 } 
