@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include "queue.h";
+
+int Fib_4(SqQueue *Q, int n){
+    if(n < 0) return -1;
+    if(n < 3) return 0;
+    if(n == 3) return 1;
+    int c = 1;
+    int temp = 0;
+    while(c <= n-3){
+        temp = Q->base[0] + Q->base[1] + Q->base[2] + Q->base[3];
+        DeQueue(&Q);
+        EnQueue(&Q, temp);
+        c++;
+    }
+    return temp;
+}
+int main()
+{
+    SqQueue Q;
+    InitQueue(&Q);
+    EnQueue(Q, 0);
+    EnQueue(Q, 0);
+    EnQueue(Q, 0);
+    EnQueue(Q, 1);
+    int temp = 0;
+    printf("0 0 0 1");
+    while(temp <= 200){
+        temp = Q->base[0]+Q->base[1]+Q->base[2]+Q->base[3];
+        printf(" %d", temp);
+        Delete(Q);
+        EnQueue(Q, temp);
+    }
+    return 0;
+}
