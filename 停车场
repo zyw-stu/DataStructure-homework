@@ -1,0 +1,147 @@
+#include<stdio.h>
+#include <time.h>
+#define MAXSIZE 100    //最大停车位 
+
+typedef struct TIME{
+	long long t;//总秒数 
+	int y;//年 
+	int m;//月 
+	int d;//日 
+	int h;//时 
+	int f;//分 
+	int s;//秒 
+}TIME;
+
+TIME getTime() {//获取当前时 
+	time_t tt;
+    tt = time(&tt);	
+	time_t timep;
+	struct tm *p;
+	time (&timep);
+	p=localtime(&timep);/*获取本地时间 */ 
+	TIME T;
+	T.t= tt;
+	T.y=1900+p->tm_year;/*获取当前年份,从1900开始，所以要加1900*/
+	T.m=1+p->tm_mon;/*获取当前月份,范围是0-11,所以要加1*/
+	T.d=p->tm_mday;/*获取当前月份日数,范围是1-31*/
+	T.h=p->tm_hour;/*获取当前时*/
+	T.f=p->tm_min;/*获取当前分*/
+	T.s=p->tm_sec;/*获取当前秒*/
+	return T;
+}
+
+void printTime(TIME T){//打印时间信息 
+	printf("%d-%d-%d	%d时%d分%d秒\n",T.y,T.m,T.d,T.h,T.f,T.s);
+}
+
+int cFee(TIME iTime,TIME oTime){//计算收费 
+	int Fee;
+	int tHour;//停车总时长，向下取整 ，不超过一个小时不收费 
+	tHour=(iTime.t-iTime.t)/3600;
+	Fee=tHour*1;//每小时收取1元。
+	return Fee; 
+}
+
+typedef struct car{//车辆信息  
+	TIME iTime;//进入时间 
+	TIME oTime;//离开时间 
+	int id[20];//车牌号 
+	int fee; 
+	int flag;//falg为0,表示车在停车场内，flag为1表示车已经离开停车场。 
+}car;
+
+typedef car QElemType;
+typedef struct{ 
+	QElemType data[MAXSIZE];
+	int f;//头指针
+	int r;//尾指针
+}SqQueue;
+
+//初始化一个空队列
+void initQueue(SqQueue *Q){
+	Q->f = Q->r = 0;
+}
+
+//求队列长度
+int getQueueLength(SqQueue *Q){
+	return (Q->r - Q->f + MAXSIZE)%MAXSIZE;
+}
+//入队操作，尾指针后移
+void enQueue(SqQueue *Q ){
+	//先判断队列是否已满
+	if(Q->f == (Q->r + 1)%MAXSIZE){
+		printf("停车场车辆已满，入队操作失败！\n");
+		return;
+	}
+	QElemType e;
+	printf("请输入进入停车场车辆的车牌号: ");
+	scanf("%s",e.id);
+	e.iTime=getTime();
+	printTime(e.iTime);
+	e.flag=0;
+	Q->data[Q->r] = e;
+	Q->r = (Q->r + 1)%MAXSIZE;
+}
+
+//出队操作，头指针后移,e返回出队元素值
+QElemType deQueue(SqQueue *Q){
+	//先判断队列是否为空
+	if(Q->f == Q->r){
+		printf("停车场暂无车辆停放，出队操作失败！\n");
+		return;
+	}
+	QElemType e = Q->data[Q->f];
+	printf("车牌号为%s的车辆离开停车场。\n", e.id);
+	e.oTime=getTime();
+	printf("离开时间：");
+	printTime(e.oTime);
+	e.fee=cFee(e.iTime,e.oTime);
+	e.flag=1;
+	printf("收取费用：%d\n",e.fee);
+	Q->f = (Q->f + 1)%MAXSIZE;
+	return e;
+}
+void printIfo(QElemType *e)//打印车辆信息 
+	{
+		printf("~~~~~~~~~~~~~~~~~\n");
+		printf("    车牌号为%s的车辆的基本信息\n",e->id) ;
+		printf("进入时间：");printTime(e->iTime); 
+	}
+void printQueue(SqQueue *Q){
+	printf("####停车场当前车辆信息####\n");
+	int i = Q->f;
+	while(i%MAXSIZE != Q->r){
+		printIfo(&(Q->data[i]));
+		i++;
+	}
+	printf("######################\n");
+}
+void park()
+{
+	printf("*******停车场系统*******\n");
+	printf("1.停车请输入i\n") ;
+	printf("2.离开请输入o\n");
+	printf("3.显示停车场当前车辆信息请输入p\n");
+	printf("4.结束系统请输入e\n");
+	SqQueue Q;
+	initQueue(&Q);
+	char c;
+	while(scanf("%c",&c)!=EOF)
+	{
+		switch (c){
+			case 'i':
+				enQueue(&Q); break;
+			case 'o':
+				deQueue(&Q); break;
+			case 'p':
+				printQueue(&Q); break;
+			case 'e':
+			 	return;
+		}
+	} 
+}
+int main()
+{
+	park();
+	return 0;
+} 
