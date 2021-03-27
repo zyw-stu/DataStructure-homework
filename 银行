@@ -1,0 +1,244 @@
+#include<stdio.h>
+#define MAXSIZE 10
+/*
+银行排队叫号系统
+公积金：1号窗口
+银行卡：2,3,4 窗口
+理财：5,6窗口，若5,6全忙，也可在2,3,4窗口办理
+取号：get 
+叫号：call 
+业务完成：done
+设每个窗口做多有10人排队，优先在人最少的窗口办理业务 
+*/
+
+
+typedef struct client{
+	int status;//当前状态，0表示取号失败, 1表示取号，2表示叫号，3表示业务完成
+	int win;//办理业务的窗口 
+	int id;//客户编号 
+}client; 
+typedef client QElemType;
+typedef struct{
+	QElemType data[MAXSIZE];
+	int f;//头指针
+	int r;//尾指针
+}SqQueue;
+
+SqQueue w1;SqQueue w2;SqQueue w3;SqQueue w4;SqQueue w5;SqQueue w6;
+
+//初始化一个空队列
+void initQueue(SqQueue *Q){
+	Q->f = Q->r = 0;
+}
+
+//求队列长度
+int getLen(SqQueue *Q){
+	return (Q->r - Q->f + MAXSIZE)%MAXSIZE;
+}
+//入队操作，尾指针后移
+void enQueue(SqQueue *Q,QElemType e){
+	//先判断队列是否已满
+	if(Q->f == (Q->r + 1)%MAXSIZE){
+		printf("该窗口正忙，无法取号！\n");
+		e.status=0;
+		return;
+	}
+	Q->data[Q->r] = e;
+	Q->r = (Q->r + 1)%MAXSIZE;
+}
+
+//出队操作，头指针后移,e返回出队元素值
+QElemType deQueue(SqQueue *Q){
+	//先判断队列是否为空
+	if(Q->f == Q->r){
+		printf("该窗口人为空，出队操作失败！\n");
+		return;
+	}
+	QElemType e = Q->data[Q->f];
+	printf("编号为%d的客户业务办理完成\n", e.id);
+	Q->f = (Q->f + 1)%MAXSIZE;
+	return e;
+}
+
+void printQueue(SqQueue *Q,int win){
+	int j;
+	for(j=1;j<=6;j++) {
+		printf("打印%d窗口状态：\n",j);
+		printf("当前正在办理业务的顾客编号：%d\n",Q->data[Q->f].id);
+		printf("当前正在等待办理业务的顾客编号：\n");
+		int i = (Q->f)+1;
+		while(i%MAXSIZE != Q->r){
+		printf("%d ", Q->data[Q->f].id);
+		i++;
+		printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+	}
+}
+void get(){//取号 
+		int len1,len2,len3,len4,len5,len6;
+		len1=getLen(&w1);len2=getLen(&w2);len3=getLen(&w3);
+		len4=getLen(&w4);len5=getLen(&w5);len6=getLen(&w6);
+        QElemType e;
+		printf("请输入客户编号:");
+		scanf("%d",&e.id);
+		e.status=1;
+		printf("1.公积金办理输入1\n");
+		printf("2.银行卡办理输入2\n");
+		printf("3.理财办理输入3\n");
+		printf("请选择您要办理的业务:");
+		int yewu; scanf("%d",&yewu);
+		switch(yewu)
+					{
+						case 1:
+							{
+								if(len1==0) e.status=2;
+								enQueue(&w1,e);
+								e.win=1;
+								break;
+							}	
+						case 2:
+							{
+								if(len2<len3&&len2<len4)
+								{
+									if(len2==0) e.status=2;
+									enQueue(&w2,e); 
+									e.win=2;
+								}
+								else if(len3<len2&&len3<len4)
+								{
+									if(len3==0) e.status=2;
+									enQueue(&w3,e);
+									e.win=3; 
+								}
+								else 
+								{
+									if(len4==0) e.status=2;
+									enQueue(&w4,e);
+									e.win=4;
+								}
+								break;
+							}
+						case 3:
+							{
+								if(len5==MAXSIZE&&len6==MAXSIZE)
+								{
+									if(len2<len3&&len2<len4)
+									{
+										if(len2==0) e.status=2;
+										enQueue(&w2,e); 
+										e.win=2;
+									}
+									else if(len3<len2&&len3<len4)
+									{
+										if(len3==0) e.status=2;
+										enQueue(&w3,e);
+										e.win=3;
+									}
+									else 
+									{
+										if(len4==0) e.status=2;
+										enQueue(&w4,e);
+										e.win=4;
+									}
+								}
+								else
+								{
+									if(len5<len6)
+									{
+										if(len5==0) e.status=2;
+										enQueue(&w5,e);
+										e.win=5;
+									}		
+									else 
+									{
+										if(len6==0) e.status=2;
+										enQueue(&w6,e);
+										e.win=6;
+									}	
+								}	
+								break;	
+							}
+					}
+}
+void done()
+{
+	printf("请输入完成当前业务的窗口：");
+	int w; scanf("%d",&w);
+	QElemType e;
+	if(w==1){
+		e=deQueue(&w1);
+		e.status=3;
+		printf("Call:%d",w1.data[w1.r]);
+		w1.data[w1.r].status=2;
+	}
+	else if(w==2){
+		e=deQueue(&w2);
+		e.status=3;
+		printf("Call:%d",w2.data[w2.r]);
+		w2.data[w2.r].status=2;
+	}
+	else if(w==3){
+		e=deQueue(&w3);
+		e.status=3;
+		printf("Call:%d",w3.data[w3.r]);
+		w3.data[w3.r].status=2;
+	}
+	else if(w==4){
+		e=deQueue(&w4);
+		e.status=3;
+		printf("Call:%d",w4.data[w4.r]);
+		w4.data[w4.r].status=2;
+	}
+	else if(w==5){
+		e=deQueue(&w5);
+		e.status=3;
+		printf("Call:%d",w5.data[w5.r]);
+		w5.data[w5.r].status=2;
+	}
+	else if(w==6){
+		e=deQueue(&w6);
+		e.status=3;
+		printf("Call:%d",w6.data[w6.r]);
+		w6.data[w6.r].status=2;
+	}
+}
+void business()
+{
+	
+	printf("***********银行业务系统************\n");
+	printf("1.取号请输入g\n");
+	printf("2.业务完成请输入d\n");
+	printf("3.显示窗口业务信息请输入p\n");
+	printf("4.银行关门结束当前所有业务请输入e\n");
+	int c;
+	while(scanf("%c",&c)!=EOF)
+	{
+		switch(c){
+			case 'g':
+				{
+					get(); //取号  
+					break;
+				}
+			case 'd':
+				{
+					done();//业务完成，叫下一号 
+					break;
+				}
+			case 'e':
+				{
+					printf("银行关门，系统结束!\n");
+					break;
+				}
+			case 'p':
+				{
+					printQueue();
+					break;
+				}		
+		}
+	}
+} 
+
+int main(){
+	initQueue(&w1);initQueue(&w2);initQueue(&w3);
+	initQueue(&w4);initQueue(&w5);initQueue(&w6);
+	business();
+} 
