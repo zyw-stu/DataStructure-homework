@@ -27,10 +27,10 @@ void queue(){
         }
         if(flag==0)//若第j列没有满足条件的放置位置，则回退到第j-1列
         {
-            if(Q.empty()) printf("No solution!\n");//如果yi/
+            if(Q.empty()) printf("No solution!\n");//如果第一列的所有地方都尝试失败，则不存在可行解
             else{
-            Q.pop(); j--;
-            a[Q[j],j]=-1;
+            	Q.pop(); j--;
+            	a[Q[j],j]=-1;//标记失败
             }
         }
     }
